@@ -1,0 +1,63 @@
+/* Background */
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Main container */
+.container {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    width: 350px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Logo */
+.title {
+    width: 300px;
+    margin-bottom: 10px;
+}
+
+/* Heading */
+h1 {
+    margin: 10px 0;
+    color: #1e3c72;
+}
+
+/* Subtitle */
+p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+/* Button container */
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Buttons */
+.btn {
+    text-decoration: none;
+    background: #1e3c72;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+/* Hover effect */
+.btn:hover {
+    background: #2a5298;
+    transform: scale(1.05);
+}
