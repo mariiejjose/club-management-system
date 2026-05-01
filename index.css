@@ -104,3 +104,14 @@ p {
 .btn.secondary:hover {
     background: #333;
 }
+
+.menu a.btn {
+    display: block;
+    text-align: center;
+}
+
+.menu {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
