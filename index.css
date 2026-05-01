@@ -1,4 +1,5 @@
-/* Background */
+/*index.html*/
+
 body {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
@@ -9,7 +10,6 @@ body {
     align-items: center;
 }
 
-/* Main container */
 .container {
     text-align: center;
     background: white;
@@ -19,33 +19,28 @@ body {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
-/* Logo */
 .title {
     width: 300px;
     margin-bottom: 10px;
 }
 
-/* Heading */
 h1 {
     margin: 10px 0;
     color: #1e3c72;
 }
 
-/* Subtitle */
 p {
     color: #666;
     font-size: 14px;
     margin-bottom: 25px;
 }
 
-/* Button container */
 .menu {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-/* Buttons */
 .btn {
     text-decoration: none;
     background: #1e3c72;
@@ -56,8 +51,56 @@ p {
     transition: 0.3s;
 }
 
-/* Hover effect */
 .btn:hover {
     background: #2a5298;
     transform: scale(1.05);
+}
+
+/*register.html*/
+
+.input-field {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.input-field:focus {
+    border-color: #1e3c72;
+    box-shadow: 0 0 5px rgba(30, 60, 114, 0.3);
+}
+
+
+.btn.secondary {
+    background: #555;
+}
+
+.btn.secondary:hover {
+    background: #333;
+}
+
+/*login.html*/
+
+.input-field {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.input-field:focus {
+    border-color: #1e3c72;
+    box-shadow: 0 0 5px rgba(30, 60, 114, 0.3);
+}
+
+.btn.secondary {
+    background: #555;
+}
+
+.btn.secondary:hover {
+    background: #333;
 }
