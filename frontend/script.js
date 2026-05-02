@@ -263,3 +263,27 @@ async function deleteClub(id) {
 
     loadClubsForDelete(); // refresh list
 }
+
+async function createEventAdmin() {
+    const name = document.getElementById("eventName").value;
+    const description = document.getElementById("eventDesc").value;
+
+    if (!name || !description) {
+        alert("Please fill all fields");
+        return;
+    }
+
+    const response = await fetch("http://127.0.0.1:5000/create_event", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: name,
+            description: description
+        })
+    });
+
+    const data = await response.json();
+    alert(data.message);
+}
