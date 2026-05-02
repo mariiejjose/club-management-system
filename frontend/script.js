@@ -1,4 +1,5 @@
 const API = "http://127.0.0.1:5000";
+let selectedEventId = null;
 
 // login
 async function login() {
@@ -286,4 +287,60 @@ async function createEventAdmin() {
 
     const data = await response.json();
     alert(data.message);
+}
+
+async function loadEventsForEdit() {
+    const response = await fetch("http://127.0.0.1:5000/events");
+    const events = await response.json();
+
+    const list = document.getElementById("eventList");
+    list.innerHTML = "";
+
+    events.forEach(event => {
+        const div = document.createElement("div");
+
+        div.innerHTML = `
+            <strong>${event.name}</strong><br>
+            ${event.description}<br><br>
+            <button onclick="selectEvent(${event.id}, '${event.name}', '${event.description}')">
+                Edit
+            </button>
+            <hr>
+        `;
+
+        list.appendChild(div);
+    });
+}
+
+function selectEvent(id, name, description) {
+    selectedEventId = id;
+
+    document.getElementById("editName").value = name;
+    document.getElementById("editDesc").value = description;
+}
+
+async function updateEvent() {
+    if (!selectedEventId) {
+        alert("Select an event first");
+        return;
+    }
+
+    const name = document.getElementById("editName").value;
+    const description = document.getElementById("editDesc").value;
+
+    const response = await fetch(
+        `http://127.0.0.1:5000/update_event/${selectedEventId}`,
+        {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ name, description })
+        }
+    );
+
+    const data = await response.json();
+    alert(data.message);
+
+    loadEventsForEdit(); // refresh list
 }
