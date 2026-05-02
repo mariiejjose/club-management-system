@@ -344,3 +344,39 @@ async function updateEvent() {
 
     loadEventsForEdit(); // refresh list
 }
+
+async function loadEventsForDelete() {
+    const response = await fetch("http://127.0.0.1:5000/events");
+    const events = await response.json();
+
+    const list = document.getElementById("eventList");
+    list.innerHTML = "";
+
+    events.forEach(event => {
+        const div = document.createElement("div");
+
+        div.innerHTML = `
+            <strong>${event.name}</strong><br>
+            ${event.description}<br><br>
+            <button onclick="deleteEventAdmin(${event.id})">Delete</button>
+            <hr>
+        `;
+
+        list.appendChild(div);
+    });
+}
+
+async function deleteEventAdmin(id) {
+    const confirmDelete = confirm("Are you sure you want to delete this event?");
+
+    if (!confirmDelete) return;
+
+    const response = await fetch(`http://127.0.0.1:5000/delete_event/${id}`, {
+        method: "DELETE"
+    });
+
+    const data = await response.json();
+    alert(data.message);
+
+    loadEventsForDelete(); // refresh list
+}
