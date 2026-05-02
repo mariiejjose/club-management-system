@@ -212,3 +212,39 @@ function openAdmin() {
         alert("Wrong password");
     }
 }
+
+async function loadClubsForDelete() {
+    const response = await fetch("http://127.0.0.1:5000/clubs");
+    const clubs = await response.json();
+
+    const list = document.getElementById("clubList");
+    list.innerHTML = "";
+
+    clubs.forEach(club => {
+        const div = document.createElement("div");
+
+        div.innerHTML = `
+            <strong>${club.name}</strong><br>
+            ${club.description}<br><br>
+            <button onclick="deleteClub(${club.id})">Delete</button>
+            <hr>
+        `;
+
+        list.appendChild(div);
+    });
+}
+
+async function deleteClub(id) {
+    const confirmDelete = confirm("Are you sure you want to delete this club?");
+
+    if (!confirmDelete) return;
+
+    const response = await fetch(`http://127.0.0.1:5000/delete_club/${id}`, {
+        method: "DELETE"
+    });
+
+    const data = await response.json();
+    alert(data.message);
+
+    loadClubsForDelete(); // refresh list
+}
