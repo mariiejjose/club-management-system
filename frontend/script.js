@@ -178,3 +178,37 @@ async function leaveEvent(eventId) {
     const data = await response.json();
     alert(data.message);
 }
+
+async function createClub() {
+    const name = document.getElementById("clubName").value;
+    const description = document.getElementById("clubDesc").value;
+
+    if (!name || !description) {
+        alert("Please fill all fields");
+        return;
+    }
+
+    const response = await fetch("http://127.0.0.1:5000/create_club", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: name,
+            description: description
+        })
+    });
+
+    const data = await response.json();
+    alert(data.message);
+}
+
+function openAdmin() {
+    const password = prompt("Enter admin password:");
+
+    if (password === "admin123") {
+        window.location.href = "admin.html";
+    } else {
+        alert("Wrong password");
+    }
+}
