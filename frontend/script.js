@@ -400,3 +400,39 @@ async function loadMembers() {
         list.appendChild(div);
     });
 }
+
+async function loadUsers() {
+    const response = await fetch("http://127.0.0.1:5000/users");
+    const users = await response.json();
+
+    const list = document.getElementById("userList");
+    list.innerHTML = "";
+
+    users.forEach(user => {
+        const div = document.createElement("div");
+
+        div.innerHTML = `
+            <strong>${user.username}</strong><br><br>
+            <button onclick="deleteUser(${user.id})">Delete</button>
+            <hr>
+        `;
+
+        list.appendChild(div);
+    });
+}
+
+async function deleteUser(id) {
+    const confirmDelete = confirm("Are you sure you want to delete this user?");
+
+    if (!confirmDelete) return;
+
+    const response = await fetch(`http://127.0.0.1:5000/delete_user/${id}`, {
+        method: "DELETE"
+    });
+
+    const data = await response.json();
+    alert(data.message);
+
+    loadUsers(); // refresh list
+}
+
