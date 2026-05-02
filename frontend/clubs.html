@@ -1,33 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="index.css">
     <title>Clubs</title>
+    <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
 
 <div class="container">
+    <h1>Available Clubs</h1>
 
-    <h1>University Clubs</h1>
-    <p>Select a club to view details or join</p>
+    <div id="clubList" class="menu"></div>
 
-    <div class="menu">
-
-        <a href="#" class="btn">Computer Science Club</a>
-        <a href="#" class="btn">Robotics Club</a>
-        <a href="#" class="btn">AI & Data Science Club</a>
-        <a href="#" class="btn">Gaming Club</a>
-        <a href="#" class="btn">Music Club</a>
-        <a href="#" class="btn">Sports Club</a>
-
-        <a href="index.html" class="btn secondary">Back to Dashboard</a>
-
-    </div>
-
+    <a href="index.html" class="btn secondary">Back</a>
 </div>
+
+<script src="script.js"></script>
+<script>
+    loadClubs();
+</script>
 
 </body>
 </html>
