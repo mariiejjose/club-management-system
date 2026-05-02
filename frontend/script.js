@@ -380,3 +380,23 @@ async function deleteEventAdmin(id) {
 
     loadEventsForDelete(); // refresh list
 }
+
+async function loadMembers() {
+    const response = await fetch("http://127.0.0.1:5000/members");
+    const users = await response.json();
+
+    const list = document.getElementById("memberList");
+    list.innerHTML = "";
+
+    users.forEach(user => {
+        const div = document.createElement("div");
+
+        div.innerHTML = `
+            <strong>${user.username}</strong><br>
+            Clubs: ${user.clubs.length > 0 ? user.clubs.join(", ") : "None"}
+            <hr>
+        `;
+
+        list.appendChild(div);
+    });
+}
