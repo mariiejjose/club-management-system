@@ -435,21 +435,7 @@ async function deleteUser(id) {
 window.onload = function () {
     console.log("Page loaded");
 
-    if (document.getElementById("clubList")) {
-        console.log("Loading clubs...");
-        loadClubs();
-    }
+    console.log("clubList element:", document.getElementById("clubList"));
 
-    if (document.getElementById("eventList")) {
-        console.log("Loading events...");
-        loadEvents();
-    }
-
-    if (document.getElementById("memberList")) {
-        loadMembers();
-    }
-
-    if (document.getElementById("userList")) {
-        loadUsers();
-    }
+    loadClubs(); // force call
 };
