@@ -1,26 +1,7 @@
 const API = "https://such-hemlock-pug.ngrok-free.dev";
 
-let selectedEventId = null;
 
-/* ================= HELPERS ================= */
-
-async function safeFetch(url, options = {}) {
-    try {
-        const res = await fetch(url, options);
-
-        if (!res.ok) {
-            throw new Error(`HTTP error ${res.status}`);
-        }
-
-        return await res.json();
-    } catch (err) {
-        console.error("Fetch error:", err);
-        alert("Server connection failed. Make sure backend + ngrok are running.");
-        throw err;
-    }
-}
-
-/* ================= LOGIN ================= */
+//users can do
 
 async function login() {
     const email = document.getElementById("email").value;
@@ -40,7 +21,6 @@ async function login() {
     }
 }
 
-/* ================= REGISTER ================= */
 
 async function register() {
     const name = document.getElementById("name").value.trim();
@@ -65,7 +45,6 @@ async function register() {
     alert(data.message);
 }
 
-/* ================= CLUBS ================= */
 
 async function loadClubs() {
     const clubList = document.getElementById("clubList");
@@ -114,7 +93,6 @@ async function leaveClub(id) {
     alert(data.message);
 }
 
-/* ================= EVENTS ================= */
 
 async function loadEvents() {
     const eventList = document.getElementById("eventList");
@@ -163,7 +141,6 @@ async function leaveEvent(id) {
     alert(data.message);
 }
 
-/* ================= MEMBERS ================= */
 
 async function loadMembers() {
     const list = document.getElementById("memberList");
@@ -186,7 +163,6 @@ async function loadMembers() {
     });
 }
 
-/* ================= USERS ================= */
 
 async function loadUsers() {
     const list = document.getElementById("userList");
@@ -219,12 +195,3 @@ async function deleteUser(id) {
     alert(data.message);
     loadUsers();
 }
-
-/* ================= AUTO LOAD ================= */
-
-window.onload = function () {
-    loadClubs();
-    loadEvents();
-    loadMembers();
-    loadUsers();
-};
