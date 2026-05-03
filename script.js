@@ -1,4 +1,4 @@
-const API = "  https://such-hemlock-pug.ngrok-free.dev";
+const API = "https://such-hemlock-pug.ngrok-free.dev";
 let selectedEventId = null;
 
 //everything user does
