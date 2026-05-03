@@ -66,23 +66,20 @@ async function register() {
 
 // clubs
 async function loadClubs() {
+    console.log("API URL:", `${API}/clubs`);
+
     const response = await fetch(`${API}/clubs`);
+    console.log("Response:", response);
+
     const clubs = await response.json();
+    console.log("Clubs data:", clubs);
 
     const clubList = document.getElementById("clubList");
     clubList.innerHTML = "";
 
     clubs.forEach(club => {
         const div = document.createElement("div");
-        div.className = "btn";
-
-        div.innerHTML = `
-            <strong>${club.name}</strong><br>
-            ${club.description}<br><br>
-            <button onclick="joinClub(${club.id})">Join</button>
-            <button onclick="leaveClub(${club.id})">Leave</button>
-        `;
-
+        div.innerHTML = club.name;
         clubList.appendChild(div);
     });
 }
@@ -435,3 +432,24 @@ async function deleteUser(id) {
     loadUsers(); // refresh list
 }
 
+window.onload = function () {
+    console.log("Page loaded");
+
+    if (document.getElementById("clubList")) {
+        console.log("Loading clubs...");
+        loadClubs();
+    }
+
+    if (document.getElementById("eventList")) {
+        console.log("Loading events...");
+        loadEvents();
+    }
+
+    if (document.getElementById("memberList")) {
+        loadMembers();
+    }
+
+    if (document.getElementById("userList")) {
+        loadUsers();
+    }
+};

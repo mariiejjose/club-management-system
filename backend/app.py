@@ -5,6 +5,13 @@ from models import db, User, Club, Event
 app = Flask(__name__)
 CORS(app)
 
+@app.after_request
+def fix_cors(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    return response
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -24,6 +31,7 @@ with app.app_context():
         db.session.add(Club(name="Robotics Club", description="Build robots"))
         db.session.add(Club(name="Art Club", description="Creative activities"))
         db.session.commit()
+
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -284,7 +292,6 @@ def delete_user(id):
     return jsonify({"message": "User deleted successfully"})
 
 
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
 
