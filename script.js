@@ -47,7 +47,7 @@ async function register() {
         return;
     }
 
-    const response = await fetch("http://127.0.0.1:5000/register", {
+    const response = await fetch(`${API}/register`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -66,7 +66,7 @@ async function register() {
 
 // clubs
 async function loadClubs() {
-    const response = await fetch("http://127.0.0.1:5000/clubs");
+    const response = await fetch(`${API}/clubs`);
     const clubs = await response.json();
 
     const clubList = document.getElementById("clubList");
@@ -90,7 +90,7 @@ async function loadClubs() {
 async function joinClub(clubId) {
     const userId = localStorage.getItem("user_id");
 
-    const response = await fetch("http://127.0.0.1:5000/join_club", {
+    const response = await fetch(`${API}/join_club`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -108,7 +108,7 @@ async function joinClub(clubId) {
 async function leaveClub(clubId) {
     const userId = localStorage.getItem("user_id");
 
-    const response = await fetch("http://127.0.0.1:5000/leave_club", {
+    const response = await fetch(`${API}/leave_club`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -125,7 +125,7 @@ async function leaveClub(clubId) {
 
 //events
 async function loadEvents() {
-    const response = await fetch("http://127.0.0.1:5000/events");
+    const response = await fetch(`${API}/events`);
     const events = await response.json();
 
     const eventList = document.getElementById("eventList");
@@ -151,7 +151,7 @@ async function joinEvent(eventId) {
 
     console.log("User:", userId, "Event:", eventId);
 
-    const response = await fetch("http://127.0.0.1:5000/join_event", {
+    const response = await fetch(`${API}/join_event`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -171,7 +171,7 @@ async function leaveEvent(eventId) {
 
     console.log("User:", userId, "Event:", eventId);
 
-    const response = await fetch("http://127.0.0.1:5000/leave_event", {
+    const response = await fetch(`${API}/leave_event`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -209,7 +209,7 @@ async function createClub() {
         return;
     }
 
-    const response = await fetch("http://127.0.0.1:5000/create_club", {
+    const response = await fetch(`${API}/create_club`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -225,7 +225,7 @@ async function createClub() {
 }
 
 async function loadClubsForDelete() {
-    const response = await fetch("http://127.0.0.1:5000/clubs");
+    const response = await fetch(`${API}/clubs`);
     const clubs = await response.json();
 
     const list = document.getElementById("clubList");
@@ -251,7 +251,7 @@ async function deleteClub(id) {
 
     if (!confirmDelete) return;
 
-    const response = await fetch(`http://127.0.0.1:5000/delete_club/${id}`, {
+    const response = await fetch(`${API}/delete_club/${id}`, {
         method: "DELETE"
     });
 
@@ -272,7 +272,7 @@ async function createEventAdmin() {
         return;
     }
 
-    const response = await fetch("http://127.0.0.1:5000/create_event", {
+    const response = await fetch(`${API}/create_event`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -288,7 +288,7 @@ async function createEventAdmin() {
 }
 
 async function loadEventsForEdit() {
-    const response = await fetch("http://127.0.0.1:5000/events");
+    const response = await fetch(`${API}/events`);
     const events = await response.json();
 
     const list = document.getElementById("eventList");
@@ -327,7 +327,7 @@ async function updateEvent() {
     const description = document.getElementById("editDesc").value;
 
     const response = await fetch(
-        `http://127.0.0.1:5000/update_event/${selectedEventId}`,
+        `${API}/update_event/${selectedEventId}`,
         {
             method: "PUT",
             headers: {
@@ -344,7 +344,7 @@ async function updateEvent() {
 }
 
 async function loadEventsForDelete() {
-    const response = await fetch("http://127.0.0.1:5000/events");
+    const response = await fetch(`${API}/events`);
     const events = await response.json();
 
     const list = document.getElementById("eventList");
@@ -369,7 +369,7 @@ async function deleteEventAdmin(id) {
 
     if (!confirmDelete) return;
 
-    const response = await fetch(`http://127.0.0.1:5000/delete_event/${id}`, {
+    const response = await fetch(`${API}/delete_event/${id}`, {
         method: "DELETE"
     });
 
@@ -381,7 +381,7 @@ async function deleteEventAdmin(id) {
 
 //managing/viewing users
 async function loadMembers() {
-    const response = await fetch("http://127.0.0.1:5000/members");
+    const response = await fetch(`${API}/members`);
     const users = await response.json();
 
     const list = document.getElementById("memberList");
@@ -401,7 +401,7 @@ async function loadMembers() {
 }
 
 async function loadUsers() {
-    const response = await fetch("http://127.0.0.1:5000/users");
+    const response = await fetch(`${API}/users`);
     const users = await response.json();
 
     const list = document.getElementById("userList");
@@ -425,7 +425,7 @@ async function deleteUser(id) {
 
     if (!confirmDelete) return;
 
-    const response = await fetch(`http://127.0.0.1:5000/delete_user/${id}`, {
+    const response = await fetch(`${API}/delete_user/${id}`, {
         method: "DELETE"
     });
 
