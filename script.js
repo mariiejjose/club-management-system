@@ -1,5 +1,7 @@
-const API = "http://127.0.0.1:5000";
+const API = "  https://such-hemlock-pug.ngrok-free.dev";
 let selectedEventId = null;
+
+//everything user does
 
 // login
 async function login() {
@@ -184,6 +186,20 @@ async function leaveEvent(eventId) {
     alert(data.message);
 }
 
+//everything admin does
+
+//access admin page with pass
+function openAdmin() {
+    const password = prompt("Enter admin password:");
+
+    if (password === "admin123") {
+        window.location.href = "admin.html";
+    } else {
+        alert("Wrong password");
+    }
+}
+
+//managing clubs
 async function createClub() {
     const name = document.getElementById("clubName").value;
     const description = document.getElementById("clubDesc").value;
@@ -206,16 +222,6 @@ async function createClub() {
 
     const data = await response.json();
     alert(data.message);
-}
-
-function openAdmin() {
-    const password = prompt("Enter admin password:");
-
-    if (password === "admin123") {
-        window.location.href = "admin.html";
-    } else {
-        alert("Wrong password");
-    }
 }
 
 async function loadClubsForDelete() {
@@ -255,6 +261,8 @@ async function deleteClub(id) {
     loadClubsForDelete(); // refresh list
 }
 
+
+//managing events
 async function createEventAdmin() {
     const name = document.getElementById("eventName").value;
     const description = document.getElementById("eventDesc").value;
@@ -371,6 +379,7 @@ async function deleteEventAdmin(id) {
     loadEventsForDelete(); // refresh list
 }
 
+//managing/viewing users
 async function loadMembers() {
     const response = await fetch("http://127.0.0.1:5000/members");
     const users = await response.json();
