@@ -1,4 +1,4 @@
-const API = "https://REPLACE-WITH-NEW-NGROK-URL";
+const API = "https://such-hemlock-pug.ngrok-free.dev";
 
 let selectedEventId = null;
 
