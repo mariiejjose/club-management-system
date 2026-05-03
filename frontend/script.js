@@ -239,20 +239,6 @@ async function loadClubsForDelete() {
     });
 }
 
-async function deleteClub(id) {
-    const confirmDelete = confirm("Are you sure you want to delete this club?");
-
-    if (!confirmDelete) return;
-
-    const response = await fetch(`http://127.0.0.1:5000/delete_club/${id}`, {
-        method: "DELETE"
-    });
-
-    const data = await response.json();
-    alert(data.message);
-
-    loadClubsForDelete(); // refresh list
-}
 
 async function deleteClub(id) {
     const confirmDelete = confirm("Are you sure you want to delete this club?");

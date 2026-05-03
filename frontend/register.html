@@ -1,33 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="index.css">
-    <title>Sign Up</title>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="index.css">
+        <title>Sign Up</title>
+    </head>
 
-<body>
+    <body>
 
-    <div class="container">
+        <div class="container">
 
-        <h1>Create Account</h1>
-        <p>Register to join the club system</p>
+            <h1>Create Account</h1>
+            <p>Register to join the club system</p>
 
-        <form class="menu" onsubmit="event.preventDefault(); register();">
+            <form class="menu" onsubmit="event.preventDefault(); register();">
 
-            <input id="name" type="text" placeholder="Enter Name" class="input-field">
-            <input id="email" type="email" placeholder="Enter University Email" class="input-field">
-            <input id="password" type="password" placeholder="Create Password" class="input-field">
-            <input id="confirmPassword" type="password" placeholder="Confirm Password" class="input-field">
-            
-            <button type="button" onclick="register()" class="btn">Sign Up</button>
+                <input id="name" type="text" placeholder="Enter Name" class="input-field">
+                <input id="email" type="email" placeholder="Enter University Email" class="input-field">
+                <input id="password" type="password" placeholder="Create Password" class="input-field">
+                <input id="confirmPassword" type="password" placeholder="Confirm Password" class="input-field">
+                
+                <button type="button" onclick="register()" class="btn">Sign Up</button>
 
-            <a href="index.html" class="btn secondary">Back to Homepage</a>
+                <a href="index.html" class="btn secondary">Back to Homepage</a>
 
-        </form>
+            </form>
 
-    </div>
-    <script src="script.js"></script>
-</body>
+        </div>
+
+        <script src="script.js"></script>
+
+    </body>
 </html>
