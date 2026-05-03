@@ -29,22 +29,31 @@ async function login() {
 
 // register
 async function register() {
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirmPassword").value;
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+    // 🔴 VALIDATION
+    if (!name || !email || !password || !confirmPassword) {
+        alert("Please fill all fields");
+        return;
+    }
 
     if (password !== confirmPassword) {
         alert("Passwords do not match");
         return;
     }
 
-    const response = await fetch(`${API}/register`, {
+    // 🔵 SEND DATA
+    const response = await fetch("http://127.0.0.1:5000/register", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            username: username,
+            name: name,
+            email: email,
             password: password
         })
     });
@@ -52,10 +61,6 @@ async function register() {
     const data = await response.json();
 
     alert(data.message);
-
-    if (response.status === 200) {
-        window.location.href = "login.html";
-    }
 }
 
 // clubs
