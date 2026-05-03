@@ -1,58 +1,98 @@
 from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from models import db, User, Club, Event
 
 app = Flask(__name__)
 CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
-db.init_app(app)
+# ------------------ ASSOCIATION TABLES ------------------
 
-with app.app_context():
-    db.create_all()
+membership = db.Table('membership',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('club_id', db.Integer, db.ForeignKey('club.id'))
+)
 
-# ---------------- AUTH ----------------
+event_registration = db.Table('event_registration',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('event_id', db.Integer, db.ForeignKey('event.id'))
+)
+
+# ------------------ MODELS ------------------
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+
+    clubs = db.relationship('Club', secondary=membership, backref='members')
+    events = db.relationship('Event', secondary=event_registration, backref='participants')
+
+
+class Club(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    description = db.Column(db.String(200))
+
+
+class Event(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    description = db.Column(db.String(200))
+
+
+# ------------------ AUTH ------------------
 
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
 
-    if not data['name'] or not data['email'] or not data['password']:
-        return jsonify({'message': 'All fields required'}), 400
+    new_user = User(
+        username=data['username'],
+        password=data['password']
+    )
 
-    if User.query.filter_by(email=data['email']).first():
-        return jsonify({'message': 'User already exists'}), 400
-
-    user = User(username=data['name'], email=data['email'], password=data['password'])
-    db.session.add(user)
+    db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({'message': 'Account created successfully'})
+    return jsonify({"message": "User registered successfully"})
 
 
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
 
-    user = User.query.filter_by(email=data['email'], password=data['password']).first()
+    user = User.query.filter_by(
+        username=data['username'],
+        password=data['password']
+    ).first()
 
     if user:
-        return jsonify({'message': 'Login successful', 'user_id': user.id})
-    return jsonify({'message': 'Invalid credentials'}), 401
+        return jsonify({
+            "message": "Login successful",
+            "user_id": user.id
+        })
+    else:
+        return jsonify({"message": "Invalid credentials"}), 401
 
 
-# ---------------- CLUBS ----------------
+# ------------------ CLUBS ------------------
 
 @app.route('/clubs', methods=['GET'])
 def get_clubs():
     clubs = Club.query.all()
-    return jsonify([{
-        "id": c.id,
-        "name": c.name,
-        "description": c.description
-    } for c in clubs])
+
+    result = []
+    for club in clubs:
+        result.append({
+            "id": club.id,
+            "name": club.name,
+            "description": club.description
+        })
+
+    return jsonify(result)
 
 
 @app.route('/create_club', methods=['POST'])
@@ -63,25 +103,31 @@ def create_club():
     db.session.add(club)
     db.session.commit()
 
-    return jsonify({"message": "Club created"})
+    return jsonify({"message": "Club created successfully"})
 
 
 @app.route('/delete_club/<int:id>', methods=['DELETE'])
 def delete_club(id):
     club = Club.query.get(id)
 
-    if club:
-        db.session.delete(club)
-        db.session.commit()
+    if not club:
+        return jsonify({"message": "Club not found"}), 404
 
-    return jsonify({"message": "Club deleted"})
+    db.session.delete(club)
+    db.session.commit()
+
+    return jsonify({"message": "Club deleted successfully"})
 
 
 @app.route('/join_club', methods=['POST'])
 def join_club():
     data = request.json
+
     user = User.query.get(data['user_id'])
     club = Club.query.get(data['club_id'])
+
+    if not user or not club:
+        return jsonify({"message": "User or Club not found"}), 404
 
     if club not in user.clubs:
         user.clubs.append(club)
@@ -93,8 +139,12 @@ def join_club():
 @app.route('/leave_club', methods=['POST'])
 def leave_club():
     data = request.json
+
     user = User.query.get(data['user_id'])
     club = Club.query.get(data['club_id'])
+
+    if not user or not club:
+        return jsonify({"message": "User or Club not found"}), 404
 
     if club in user.clubs:
         user.clubs.remove(club)
@@ -103,16 +153,21 @@ def leave_club():
     return jsonify({"message": "Left club"})
 
 
-# ---------------- EVENTS ----------------
+# ------------------ EVENTS ------------------
 
 @app.route('/events', methods=['GET'])
 def get_events():
     events = Event.query.all()
-    return jsonify([{
-        "id": e.id,
-        "name": e.name,
-        "description": e.description
-    } for e in events])
+
+    result = []
+    for event in events:
+        result.append({
+            "id": event.id,
+            "name": event.name,
+            "description": event.description
+        })
+
+    return jsonify(result)
 
 
 @app.route('/create_event', methods=['POST'])
@@ -123,92 +178,114 @@ def create_event():
     db.session.add(event)
     db.session.commit()
 
-    return jsonify({"message": "Event created"})
+    return jsonify({"message": "Event created successfully"})
 
 
 @app.route('/update_event/<int:id>', methods=['PUT'])
 def update_event(id):
     event = Event.query.get(id)
 
-    if event:
-        data = request.json
-        event.name = data['name']
-        event.description = data['description']
-        db.session.commit()
+    if not event:
+        return jsonify({"message": "Event not found"}), 404
 
-    return jsonify({"message": "Event updated"})
+    data = request.json
+    event.name = data['name']
+    event.description = data['description']
+
+    db.session.commit()
+
+    return jsonify({"message": "Event updated successfully"})
 
 
 @app.route('/delete_event/<int:id>', methods=['DELETE'])
 def delete_event(id):
     event = Event.query.get(id)
 
-    if event:
-        db.session.delete(event)
-        db.session.commit()
+    if not event:
+        return jsonify({"message": "Event not found"}), 404
 
-    return jsonify({"message": "Event deleted"})
+    db.session.delete(event)
+    db.session.commit()
+
+    return jsonify({"message": "Event deleted successfully"})
 
 
 @app.route('/join_event', methods=['POST'])
 def join_event():
     data = request.json
+
     user = User.query.get(data['user_id'])
     event = Event.query.get(data['event_id'])
+
+    if not user or not event:
+        return jsonify({"message": "User or Event not found"}), 404
 
     if event not in user.events:
         user.events.append(event)
         db.session.commit()
 
-    return jsonify({"message": "Registered"})
+    return jsonify({"message": "Registered for event"})
 
 
 @app.route('/leave_event', methods=['POST'])
 def leave_event():
     data = request.json
+
     user = User.query.get(data['user_id'])
     event = Event.query.get(data['event_id'])
+
+    if not user or not event:
+        return jsonify({"message": "User or Event not found"}), 404
 
     if event in user.events:
         user.events.remove(event)
         db.session.commit()
 
-    return jsonify({"message": "Cancelled"})
+    return jsonify({"message": "Event registration cancelled"})
 
 
-# ---------------- USERS / ADMIN ----------------
+# ------------------ ADMIN ------------------
 
 @app.route('/members', methods=['GET'])
-def members():
+def get_members():
     users = User.query.all()
 
-    return jsonify([{
-        "id": u.id,
-        "username": u.username,
-        "clubs": [c.name for c in u.clubs]
-    } for u in users])
+    result = []
+    for user in users:
+        result.append({
+            "username": user.username,
+            "clubs": [club.name for club in user.clubs]
+        })
+
+    return jsonify(result)
 
 
 @app.route('/users', methods=['GET'])
-def users():
+def get_users():
     users = User.query.all()
 
-    return jsonify([{
-        "id": u.id,
-        "username": u.username
-    } for u in users])
+    return jsonify([
+        {"id": user.id, "username": user.username}
+        for user in users
+    ])
 
 
 @app.route('/delete_user/<int:id>', methods=['DELETE'])
 def delete_user(id):
     user = User.query.get(id)
 
-    if user:
-        db.session.delete(user)
-        db.session.commit()
+    if not user:
+        return jsonify({"message": "User not found"}), 404
 
-    return jsonify({"message": "User deleted"})
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({"message": "User deleted successfully"})
 
 
-if __name__ == "__main__":
+# ------------------ RUN ------------------
+
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
