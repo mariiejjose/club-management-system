@@ -1,232 +1,79 @@
-const API = "https://such-hemlock-pug.ngrok-free.dev";
+const API = "https://REPLACE-WITH-NEW-NGROK-URL";
+
 let selectedEventId = null;
 
-//everything user does
+/* ================= HELPERS ================= */
 
-// login
+async function safeFetch(url, options = {}) {
+    try {
+        const res = await fetch(url, options);
+
+        if (!res.ok) {
+            throw new Error(`HTTP error ${res.status}`);
+        }
+
+        return await res.json();
+    } catch (err) {
+        console.error("Fetch error:", err);
+        alert("Server connection failed. Make sure backend + ngrok are running.");
+        throw err;
+    }
+}
+
+/* ================= LOGIN ================= */
+
 async function login() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    const response = await fetch(`${API}/login`, {
+    const data = await safeFetch(`${API}/login`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            email: email,
-            password: password
-        })
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ email, password })
     });
-
-    const data = await response.json();
 
     alert(data.message);
 
-    if (response.status === 200) {
+    if (data.user_id) {
         localStorage.setItem("user_id", data.user_id);
         window.location.href = "index.html";
     }
 }
 
-// register
+/* ================= REGISTER ================= */
+
 async function register() {
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
     const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-
     if (!name || !email || !password || !confirmPassword) {
-        alert("Please fill all fields");
-        return;
+        return alert("Fill all fields");
     }
 
     if (password !== confirmPassword) {
-        alert("Passwords do not match");
-        return;
+        return alert("Passwords do not match");
     }
 
-    const response = await fetch(`${API}/register`, {
+    const data = await safeFetch(`${API}/register`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            name: name,
-            email: email,
-            password: password
-        })
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ name, email, password })
     });
-
-    const data = await response.json();
 
     alert(data.message);
 }
 
-// clubs
+/* ================= CLUBS ================= */
+
 async function loadClubs() {
-    console.log("API URL:", `${API}/clubs`);
-
-    const response = await fetch(`${API}/clubs`);
-    console.log("Response:", response);
-
-    const clubs = await response.json();
-    console.log("Clubs data:", clubs);
-
     const clubList = document.getElementById("clubList");
+    if (!clubList) return;
+
+    const clubs = await safeFetch(`${API}/clubs`);
+
     clubList.innerHTML = "";
-
-    clubs.forEach(club => {
-        const div = document.createElement("div");
-        div.innerHTML = club.name;
-        clubList.appendChild(div);
-    });
-}
-
-async function joinClub(clubId) {
-    const userId = localStorage.getItem("user_id");
-
-    const response = await fetch(`${API}/join_club`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            user_id: userId,
-            club_id: clubId
-        })
-    });
-
-    const data = await response.json();
-    alert(data.message);
-}
-
-async function leaveClub(clubId) {
-    const userId = localStorage.getItem("user_id");
-
-    const response = await fetch(`${API}/leave_club`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            user_id: userId,
-            club_id: clubId
-        })
-    });
-
-    const data = await response.json();
-    alert(data.message);
-}
-
-//events
-async function loadEvents() {
-    const response = await fetch(`${API}/events`);
-    const events = await response.json();
-
-    const eventList = document.getElementById("eventList");
-    eventList.innerHTML = "";
-
-    events.forEach(event => {
-        const div = document.createElement("div");
-        div.className = "btn";
-
-        div.innerHTML = `
-            <strong>${event.name}</strong><br>
-            ${event.description}<br><br>
-            <button onclick="joinEvent(${event.id})">Register</button>
-            <button onclick="leaveEvent(${event.id})">Cancel</button>
-        `;
-
-        eventList.appendChild(div);
-    });
-}
-
-async function joinEvent(eventId) {
-    const userId = localStorage.getItem("user_id");
-
-    console.log("User:", userId, "Event:", eventId);
-
-    const response = await fetch(`${API}/join_event`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            user_id: userId,
-            event_id: eventId
-        })
-    });
-
-    const data = await response.json();
-    alert(data.message);
-}
-
-async function leaveEvent(eventId) {
-    const userId = localStorage.getItem("user_id");
-
-    console.log("User:", userId, "Event:", eventId);
-
-    const response = await fetch(`${API}/leave_event`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            user_id: userId,
-            event_id: eventId
-        })
-    });
-
-    const data = await response.json();
-    alert(data.message);
-}
-
-//everything admin does
-
-//access admin page with pass
-function openAdmin() {
-    const password = prompt("Enter admin password:");
-
-    if (password === "admin123") {
-        window.location.href = "admin.html";
-    } else {
-        alert("Wrong password");
-    }
-}
-
-//managing clubs
-async function createClub() {
-    const name = document.getElementById("clubName").value;
-    const description = document.getElementById("clubDesc").value;
-
-    if (!name || !description) {
-        alert("Please fill all fields");
-        return;
-    }
-
-    const response = await fetch(`${API}/create_club`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            name: name,
-            description: description
-        })
-    });
-
-    const data = await response.json();
-    alert(data.message);
-}
-
-async function loadClubsForDelete() {
-    const response = await fetch(`${API}/clubs`);
-    const clubs = await response.json();
-
-    const list = document.getElementById("clubList");
-    list.innerHTML = "";
 
     clubs.forEach(club => {
         const div = document.createElement("div");
@@ -234,62 +81,48 @@ async function loadClubsForDelete() {
         div.innerHTML = `
             <strong>${club.name}</strong><br>
             ${club.description}<br><br>
-            <button onclick="deleteClub(${club.id})">Delete</button>
+            <button onclick="joinClub(${club.id})">Join</button>
+            <button onclick="leaveClub(${club.id})">Leave</button>
             <hr>
         `;
 
-        list.appendChild(div);
+        clubList.appendChild(div);
     });
 }
 
+async function joinClub(id) {
+    const user_id = localStorage.getItem("user_id");
 
-async function deleteClub(id) {
-    const confirmDelete = confirm("Are you sure you want to delete this club?");
-
-    if (!confirmDelete) return;
-
-    const response = await fetch(`${API}/delete_club/${id}`, {
-        method: "DELETE"
-    });
-
-    const data = await response.json();
-    alert(data.message);
-
-    loadClubsForDelete(); // refresh list
-}
-
-
-//managing events
-async function createEventAdmin() {
-    const name = document.getElementById("eventName").value;
-    const description = document.getElementById("eventDesc").value;
-
-    if (!name || !description) {
-        alert("Please fill all fields");
-        return;
-    }
-
-    const response = await fetch(`${API}/create_event`, {
+    const data = await safeFetch(`${API}/join_club`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            name: name,
-            description: description
-        })
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ user_id, club_id: id })
     });
 
-    const data = await response.json();
     alert(data.message);
 }
 
-async function loadEventsForEdit() {
-    const response = await fetch(`${API}/events`);
-    const events = await response.json();
+async function leaveClub(id) {
+    const user_id = localStorage.getItem("user_id");
 
-    const list = document.getElementById("eventList");
-    list.innerHTML = "";
+    const data = await safeFetch(`${API}/leave_club`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ user_id, club_id: id })
+    });
+
+    alert(data.message);
+}
+
+/* ================= EVENTS ================= */
+
+async function loadEvents() {
+    const eventList = document.getElementById("eventList");
+    if (!eventList) return;
+
+    const events = await safeFetch(`${API}/events`);
+
+    eventList.innerHTML = "";
 
     events.forEach(event => {
         const div = document.createElement("div");
@@ -297,91 +130,47 @@ async function loadEventsForEdit() {
         div.innerHTML = `
             <strong>${event.name}</strong><br>
             ${event.description}<br><br>
-            <button onclick="selectEvent(${event.id}, '${event.name}', '${event.description}')">
-                Edit
-            </button>
+            <button onclick="joinEvent(${event.id})">Register</button>
+            <button onclick="leaveEvent(${event.id})">Cancel</button>
             <hr>
         `;
 
-        list.appendChild(div);
+        eventList.appendChild(div);
     });
 }
 
-function selectEvent(id, name, description) {
-    selectedEventId = id;
+async function joinEvent(id) {
+    const user_id = localStorage.getItem("user_id");
 
-    document.getElementById("editName").value = name;
-    document.getElementById("editDesc").value = description;
-}
+    const data = await safeFetch(`${API}/join_event`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ user_id, event_id: id })
+    });
 
-async function updateEvent() {
-    if (!selectedEventId) {
-        alert("Select an event first");
-        return;
-    }
-
-    const name = document.getElementById("editName").value;
-    const description = document.getElementById("editDesc").value;
-
-    const response = await fetch(
-        `${API}/update_event/${selectedEventId}`,
-        {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ name, description })
-        }
-    );
-
-    const data = await response.json();
     alert(data.message);
-
-    loadEventsForEdit(); // refresh list
 }
 
-async function loadEventsForDelete() {
-    const response = await fetch(`${API}/events`);
-    const events = await response.json();
+async function leaveEvent(id) {
+    const user_id = localStorage.getItem("user_id");
 
-    const list = document.getElementById("eventList");
-    list.innerHTML = "";
-
-    events.forEach(event => {
-        const div = document.createElement("div");
-
-        div.innerHTML = `
-            <strong>${event.name}</strong><br>
-            ${event.description}<br><br>
-            <button onclick="deleteEventAdmin(${event.id})">Delete</button>
-            <hr>
-        `;
-
-        list.appendChild(div);
-    });
-}
-
-async function deleteEventAdmin(id) {
-    const confirmDelete = confirm("Are you sure you want to delete this event?");
-
-    if (!confirmDelete) return;
-
-    const response = await fetch(`${API}/delete_event/${id}`, {
-        method: "DELETE"
+    const data = await safeFetch(`${API}/leave_event`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ user_id, event_id: id })
     });
 
-    const data = await response.json();
     alert(data.message);
-
-    loadEventsForDelete(); // refresh list
 }
 
-//managing/viewing users
+/* ================= MEMBERS ================= */
+
 async function loadMembers() {
-    const response = await fetch(`${API}/members`);
-    const users = await response.json();
-
     const list = document.getElementById("memberList");
+    if (!list) return;
+
+    const users = await safeFetch(`${API}/members`);
+
     list.innerHTML = "";
 
     users.forEach(user => {
@@ -389,7 +178,7 @@ async function loadMembers() {
 
         div.innerHTML = `
             <strong>${user.username}</strong><br>
-            Clubs: ${user.clubs.length > 0 ? user.clubs.join(", ") : "None"}
+            Clubs: ${user.clubs.length ? user.clubs.join(", ") : "None"}
             <hr>
         `;
 
@@ -397,18 +186,21 @@ async function loadMembers() {
     });
 }
 
-async function loadUsers() {
-    const response = await fetch(`${API}/users`);
-    const users = await response.json();
+/* ================= USERS ================= */
 
+async function loadUsers() {
     const list = document.getElementById("userList");
+    if (!list) return;
+
+    const users = await safeFetch(`${API}/users`);
+
     list.innerHTML = "";
 
     users.forEach(user => {
         const div = document.createElement("div");
 
         div.innerHTML = `
-            <strong>${user.username}</strong><br><br>
+            <strong>${user.username}</strong><br>
             <button onclick="deleteUser(${user.id})">Delete</button>
             <hr>
         `;
@@ -418,24 +210,21 @@ async function loadUsers() {
 }
 
 async function deleteUser(id) {
-    const confirmDelete = confirm("Are you sure you want to delete this user?");
+    if (!confirm("Delete user?")) return;
 
-    if (!confirmDelete) return;
-
-    const response = await fetch(`${API}/delete_user/${id}`, {
+    const data = await safeFetch(`${API}/delete_user/${id}`, {
         method: "DELETE"
     });
 
-    const data = await response.json();
     alert(data.message);
-
-    loadUsers(); // refresh list
+    loadUsers();
 }
 
+/* ================= AUTO LOAD ================= */
+
 window.onload = function () {
-    console.log("Page loaded");
-
-    console.log("clubList element:", document.getElementById("clubList"));
-
-    loadClubs(); // force call
+    loadClubs();
+    loadEvents();
+    loadMembers();
+    loadUsers();
 };
