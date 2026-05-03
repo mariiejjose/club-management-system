@@ -3,7 +3,7 @@ let selectedEventId = null;
 
 // login
 async function login() {
-    const username = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
     const response = await fetch(`${API}/login`, {
@@ -12,7 +12,7 @@ async function login() {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            username: username,
+            email: email,
             password: password
         })
     });
@@ -34,7 +34,7 @@ async function register() {
     const password = document.getElementById("password").value.trim();
     const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-    // 🔴 VALIDATION
+
     if (!name || !email || !password || !confirmPassword) {
         alert("Please fill all fields");
         return;
@@ -45,7 +45,6 @@ async function register() {
         return;
     }
 
-    // 🔵 SEND DATA
     const response = await fetch("http://127.0.0.1:5000/register", {
         method: "POST",
         headers: {
